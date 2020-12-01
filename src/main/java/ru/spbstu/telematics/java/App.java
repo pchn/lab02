@@ -13,10 +13,11 @@ public class App
 {
     public static void main( String[] args )
     {
-        ArrayListValuedHashMap<Integer,String> alvhm = new ArrayListValuedHashMap<Integer,String>();
-        alvhm.put(30,"Hello World!");
-        alvhm.put(30,"Bye World!");
-        alvhm.put(46,"How the hell it works???");
-        List<String> list = alvhm.get(30);
+        ArrayListValuedHashMap<String,String> alvhm = new ArrayListValuedHashMap<String,String>();
+        alvhm.put("First","Hello World!");
+        alvhm.put("Second","Bye World!");
+        alvhm.put("Second","How the hell it works???");
+        alvhm.put("Second", "shiiiiiit....");
+        List<String> flag = alvhm.get("Second");
     }
 }

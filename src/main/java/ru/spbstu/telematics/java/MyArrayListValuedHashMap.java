@@ -1,79 +1,54 @@
 package ru.spbstu.telematics.java;
 
+import org.apache.commons.math3.util.Pair;
+
 import java.util.*;
+
+
+import static java.lang.Math.abs;
 
 @SuppressWarnings("rawtypes")
 public class MyArrayListValuedHashMap <K,V> implements Map<K,V> {
+
+    class Node<K, V> {
+
+        private final K key;
+        private V value;
+        int hashCode;
+        Node(K key, V value) {
+            this.key = key;
+            this.value = value;
+            this.hashCode = key.hashCode();
+        }
+
+        public final K getKey() { return key; }
+
+        public V getValue() { return value; }
+
+        public final V setValue(V newValue) {
+            V oldValue = value;
+            value = newValue;
+            return oldValue;
+        }
+
+        /*public final boolean equals(Object o) {
+            if (o == this)
+                return true;
+            if (o instanceof Map.Entry) {
+                Map.Entry<?,?> e = (Map.Entry<?,?>)o;
+                if (Objects.equals(key, e.getKey()) &&
+                        Objects.equals(value, e.getValue()))
+                    return true;
+            }
+            return false;
+        }*/
+    }
+
     private static final int INIT_MAP_CAPACITY = 16;
     private static final int INIT_LIST_CAPACITY = 3;
-    //private final int initialListCapacity;
-    //private final int mapSize;
-
-    private class MyArrayList <V> {
-        private int size;
-        private int capacity;
-        private static final int DEFAULT_CAPACITY_INC = 3;
-        V[] arr;
-
-        public MyArrayList() {
-            this(0);
-        }
-
-        public MyArrayList(int size) {
-            this.size = size;
-            this.capacity = this.size;
-            arr = (V[]) new Object[this.capacity];
-        }
-
-        public boolean add(V toAdd) {
-            if (this.size < this.capacity) {
-                arr[size] = toAdd;
-                size++;
-                return true;
-            }
-            else {
-                V[] newArr = (V[]) new Object[capacity + DEFAULT_CAPACITY_INC];
-                for(int i = 0; i < size; i++) {
-                    newArr[i] = arr[i];
-                }
-                newArr[size] = toAdd;
-                arr = newArr;
-                newArr = null;
-                size++;
-                capacity += DEFAULT_CAPACITY_INC;
-                return true;
-            }
-        }
-
-        public void clear() {
-            size = 0;
-            capacity = 0;
-            V[] newArr = (V[]) new Object[capacity];
-            arr = newArr;
-            newArr = null;
-        }
-
-        public V get(int index) throws ArrayIndexOutOfBoundsException {
-            if(0 < index || index >= size) {
-                throw new ArrayIndexOutOfBoundsException();
-            }
-            return arr[index];
-        }
-        public V remove(int index) throws ArrayIndexOutOfBoundsException {
-            if(0 < index || index >= size) {
-                throw new ArrayIndexOutOfBoundsException();
-            }
-            V[] newArr = (V[]) new Object[capacity];
-            for(int i = 0; i  < index; i++)
-                newArr[i] = arr[i];
-            V returned = arr[index];
-            for(int i = index + 1; i < size; i++)
-                newArr[i-1] = arr[i];
-            size--;
-            arr = newArr;
-            return returned;
-        }
-    }
+    private final int initialListCapacity;
+    private int mapContentsAmount;
+    private ArrayList<Node<K,V>>[] hashTable;
 
     public MyArrayListValuedHashMap() {
         this(INIT_MAP_CAPACITY, INIT_LIST_CAPACITY);
@@ -84,21 +59,50 @@ public class MyArrayListValuedHashMap <K,V> implements Map<K,V> {
     }
 
     public MyArrayListValuedHashMap(int initialMapCapacity, int initialListCapacity) {
-        //super(new HashMap(initialMapCapacity));
-        //this.initialListCapacity = initialListCapacity;
+        hashTable = (ArrayList<Node<K,V>>[]) new Object[initialMapCapacity];
+        this.initialListCapacity = initialListCapacity;
+        for(int i = 0; i < initialMapCapacity; i++) {
+            hashTable[i] = new ArrayList<Node<K,V>>(initialListCapacity);
+        }
+        mapContentsAmount = 0;
     }
 
-
+    /**
+     * @return количество всех объектов, хранящихся в коллекции
+     */
     public int size() {
-        return 0;
+        return mapContentsAmount;
     }
 
+    /**
+     * @return <code>true</code> если в коллекции нет ни одного объекта
+     * */
     public boolean isEmpty() {
-        return false;
+        if (mapContentsAmount != 0) {
+            return false;
+        }
+        return true;
     }
 
+    /**
+     * Проверяет наличие объекта с заданным ключом в коллекции
+     * @param key ключ, наличие которого в коллекции надо проверить
+     * @return <code>true</code> если объект с заданным ключом есть в коллекции
+     */
     public boolean containsKey(Object key) {
-        return false;
+        int index = getIndex((K) key);
+        return getNode(getIndex((K)key), key) != null;
+    }
+
+    final Node<K,V> getNode(int index, Object key) {
+        ArrayList<Node<K,V>> tabRaw; K k;
+        if(((tabRaw = hashTable[index]) != null)&&(mapContentsAmount != 0)) {
+            for(Node<K, V> e : tabRaw) {
+                if(safeEquals(e.getKey(),key))
+                    return e;
+            }
+        }
+        return null;
     }
 
     public boolean containsValue(Object value) {
@@ -135,5 +139,23 @@ public class MyArrayListValuedHashMap <K,V> implements Map<K,V> {
 
     public Set<Entry<K, V>> entrySet() {
         return null;
+    }
+
+
+    /**
+     * Возвращает индекс в таблице, соответствующий заданному ключу
+     * @param key ключ, индекс которого надо найти
+     * @return индекс ключа в таблице
+     */
+    private int getIndex(K key) {
+        return (key == null) ? 0 : abs(key.hashCode() % hashTable.length);
+    }
+    /*static final int hash(Object key) {
+        int h;
+        return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
+    }*/
+
+    static private boolean safeEquals(Object o1, Object o2) {
+        return o1 == null && o2 == null || o1 != null && o1.equals(o2);
     }
 }
