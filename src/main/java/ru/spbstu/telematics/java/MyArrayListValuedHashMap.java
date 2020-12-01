@@ -94,6 +94,13 @@ public class MyArrayListValuedHashMap <K,V> implements Map<K,V> {
         return getNode(getIndex((K)key), key) != null;
     }
 
+    /**
+     * Находит и возвращает первую записанную пару значений {@param key, value}
+     * (в частности, чтобы убедиться, что такие вообще есть)
+     * @param index номер элемента таблицы, где находится (может, по крайней мере) ArrayList с интересующей нас записью
+     * @param key ключ интересующей нас записи
+     * @return возвращает найденный элемент, если хотя бы один подходящий был найден, в противном случае возвращает <code>null</code>
+     */
     final Node<K,V> getNode(int index, Object key) {
         ArrayList<Node<K,V>> tabRaw; K k;
         if(((tabRaw = hashTable[index]) != null)&&(mapContentsAmount != 0)) {
