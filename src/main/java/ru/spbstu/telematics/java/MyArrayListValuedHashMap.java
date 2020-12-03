@@ -17,12 +17,10 @@ public class MyArrayListValuedHashMap <K,V> implements ListValuedMap<K,V> {
 
         private final K key;
         private V value;
-        //int hashCode;
 
         Node(K key, V value) {
             this.key = key;
             this.value = value;
-            //this.hashCode = key.hashCode();
         }
 
         public final K getKey() { return key; }
@@ -34,18 +32,6 @@ public class MyArrayListValuedHashMap <K,V> implements ListValuedMap<K,V> {
             value = newValue;
             return oldValue;
         }
-
-        /*public final boolean equals(Object o) {
-            if (o == this)
-                return true;
-            if (o instanceof Map.Entry) {
-                Map.Entry<?,?> e = (Map.Entry<?,?>)o;
-                if (Objects.equals(key, e.getKey()) &&
-                        Objects.equals(value, e.getValue()))
-                    return true;
-            }
-            return false;
-        }*/
     }//Node class
 
     /**
@@ -448,26 +434,14 @@ public class MyArrayListValuedHashMap <K,V> implements ListValuedMap<K,V> {
         return new MyIterator(hashTable);
     }
 
-    /*public Set<Map.Entry<K,V>> entrySet() {
-        Set<Map.Entry<K,V>> set = new HashSet<>();
-        Collection<Map.Entry<K,V>> coll = entries();
-        set.addAll(coll);
-        return set;
-    }*/
-
-
     /**
      * Возвращает индекс в таблице, соответствующий заданному ключу
      * @param key ключ, индекс которого надо найти
      * @return индекс ключа в таблице
      */
-    private /*<K>*/ int getIndex(Object key) {
+    private int getIndex(Object key) {
         return (key == null) ? 0 : abs(key.hashCode() % hashTable.length);
     }
-    /*static final int hash(Object key) {
-        int h;
-        return (key == null) ? 0 : (h = key.hashCode()) ^ (h >>> 16);
-    }*/
 
     /**
      * Корректно сравнивает два объекта
