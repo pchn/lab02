@@ -282,9 +282,9 @@ public class MyArrayListValuedHashMap <K,V> implements ListValuedMap<K,V> {
 
 
     /**
-     * Удаляет из коллекции все элементы с ключом {@param key} и значением {@param value}
-     * @param key ключ элементов, которые будут удаленны
-     * @param value значене элементов, которые будут удалены
+     * Удаляет из коллекции один элемент с ключом {@param key} и значением {@param value}
+     * @param key ключ элемента, который будет удален
+     * @param value значение элемента, который будет удален
      * @return <code>true</code>, если после вызовва метода размер коллекции изсменился (уменьшился)
      */
     @Override
