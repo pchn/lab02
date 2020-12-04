@@ -8,7 +8,7 @@ import java.util.*;
 
 import static java.lang.Math.abs;
 
-public class MyArrayListValuedHashMap <K,V> implements ListValuedMap<K,V> {
+public class MyArrayListValuedHashMap <K,V> implements MultiValuedMap<K,V> {
 
     /**
      * Класс, представляющий элементы коллекции
